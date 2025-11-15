@@ -27,3 +27,31 @@ def get_profile_info()->dict:
     user_profile = {"name":user_name , "age":current_age, "stage":life_stage , "hobbies":hobbies}
 
     return user_profile 
+
+
+def show_profile(user_profile:dict)->None:
+    num_hobbies = len(user_profile["hobbies"])
+    if num_hobbies == 0:
+        hobbies_summary = "\nУоu didn't mention апу hobbies.\n"
+    else:
+        hobbies_summary = f"\nFavorite Hobbies ({num_hobbies}):\n"
+        for h in user_profile["hobbies"]:
+            hobbies_summary += f"- {h}\n"
+        
+    
+    summery_profil = f"""---
+Profil Summary
+Name: {user_profile["name"]}
+Age: {user_profile["age"]}
+Life Stage: {user_profile["stage"]}"""
+    summery_profil += hobbies_summary + "---"
+
+    print(summery_profil)
+
+
+def main():
+    show_profile(get_profile_info())
+
+
+if __name__ == "__main__":
+    main()
