@@ -59,8 +59,28 @@ def main():
         
     
     def gen_report(students:list):
-        pass
+        if students == []:
+            print("The list of students is empty.")
+        else:
+            report_text="--- Student Report ---\n"
+            grades = []
+            for student in students:
+                for key , value in student.items():
+                    try:
+                        average_grade = round(sum(value)/len(value),1)
+                        grades.append(average_grade)
+                    except ZeroDivisionError:
+                        average_grade = "N/A"
+                    report_text += f"{key}'s average grade is {average_grade}\n"
+            report_text += "-" *  10
+            if grades == []:
+                print("Students have no grades")
+            else:
+                average_overall = round(sum(grades)/len(grades),1)
+                report_text += f"\nMax Average: {max(grades)}\nMin Average: {min(grades)}\nOverall Average: {average_overall}"
+                print(report_text)
 
+            
 
     def get_top_students(students:list):
         pass
