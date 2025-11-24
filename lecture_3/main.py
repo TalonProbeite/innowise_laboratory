@@ -19,7 +19,53 @@ def main():
                     break
             except ValueError as e:
                 print(e)
+
+
+    def add_grade(students:list):
+        while True:
+            name = input("Enter student name: ").capitalize()
+            try:
+                if any(char.isdigit() for char in name):
+                    raise ValueError("Invalid input. Please enter a name as a string ,  without numbers and punctuation marks!.\n")
+                if not all(char.isalnum() for char in name):
+                    raise ValueError("Invalid input. Please enter a name as a string, without numbers and punctuation marks!.\n")
+                
+                for student in students:
+                    if name in student:
+                        while True:
+                            grade = input("Enter a grade (or 'done' to finish): ")
+                            if grade == "done": break
+                            try:
+                                if any(char.isalpha() for char in grade):
+                                    raise ValueError("Invalid input. Please enter a numbe.\n")
+                                if not all(char.isalnum() for char in grade):
+                                    raise ValueError("Invalid input. Please enter a numbe.\n")
+                                grade_int = int(grade)
+                                if  grade_int<0 or grade_int>100:
+                                    raise ValueError("Invalid input. Please enter number between 0 and 100.\n")
+                                
+                                student[name].append(grade_int)
+                                
+                            except ValueError as e:
+                                print(e)
+                        break
+                else:
+                    print("Student not found.")
+                break
+
+
+            except ValueError as e:
+                print(e)
         
+    
+    def gen_report(students:list):
+        pass
+
+
+    def get_top_students(students:list):
+        pass
+
+
     main_menu = "\n--- Student Grade Analyzer ---\n1. Add a new student\n2. Add grades for a student\n3. Generate a full report\n4. Find the top student\n5. Exit program\nEnter your choice: " 
     students = []
     while True:
@@ -31,11 +77,18 @@ def main():
                     break
                 case 1:
                     add_student(students=students)
+                case 2:
+                    add_grade(students=students)
+                case 3:
+                    gen_report(students=students)
+                case 4:
+                    get_top_students(students=students)
+                case _:
+                    print("Invalid input. Please enter a number between 1 and 5!.")
 
         except ValueError:
             print("Invalid input. Please enter a number.\n")
 
+
 if __name__ == "__main__":
     main()
-
-
