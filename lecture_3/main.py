@@ -37,9 +37,9 @@ def main():
                             if grade == "done": break
                             try:
                                 if any(char.isalpha() for char in grade):
-                                    raise ValueError("Invalid input. Please enter a numbe.\n")
+                                    raise ValueError("Invalid input. Please enter a number.\n")
                                 if not all(char.isalnum() for char in grade):
-                                    raise ValueError("Invalid input. Please enter a numbe.\n")
+                                    raise ValueError("Invalid input. Please enter a number.\n")
                                 grade_int = int(grade)
                                 if  grade_int<0 or grade_int>100:
                                     raise ValueError("Invalid input. Please enter number between 0 and 100.\n")
@@ -52,8 +52,6 @@ def main():
                 else:
                     print("Student not found.")
                 break
-
-
             except ValueError as e:
                 print(e)
         
@@ -83,7 +81,20 @@ def main():
             
 
     def get_top_students(students:list):
-        pass
+        if students == []:
+            print("The list of students is empty.")
+        grades = []
+        average_grade = lambda x: round(sum(x)/len(x),1)
+        for student in students:
+            for key, value in student.items():
+                try:
+                    grades.append(average_grade(value))
+                except ZeroDivisionError:
+                    grades.append(0)
+        max_grade = max(grades)
+        max_grade_name = list(students[grades.index(max_grade)].keys())[0]
+        print(f"The student with the highest average  is {max_grade_name} with a grade of {max_grade}")
+            
 
 
     main_menu = "\n--- Student Grade Analyzer ---\n1. Add a new student\n2. Add grades for a student\n3. Generate a full report\n4. Find the top student\n5. Exit program\nEnter your choice: " 
