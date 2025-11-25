@@ -4,30 +4,31 @@ def main():
         """
         Add a new student to the list after validating the entered name.
 
-        The function ensures the name consists only of alphabetic characters,
-        checks for duplicates, and then adds the student as a dictionary
-        {Name: []} to the students list.
-
-        Parameters:
-            students (list): A list of dictionaries storing students
-                             and their grade lists.
+        The function ensures that the name consists only of alphabetical
+        characters, checks whether the student already exists, and adds a new
+        dictionary {'name':name,'grades':[]} to the students list.
         """
         while True:
-            name = input("Enter student name: ").strip()
+            name_input = input("Enter student name: ").strip()
             try:
-                if any(char.isdigit() for char in name):
-                    raise ValueError("Invalid input. Please enter a name without numbers.\n")
-                if not name.isalpha():
-                    raise ValueError("Invalid input. Please enter a name using only letters.\n")
+                if any(char.isdigit() for char in name_input):
+                    raise ValueError(
+                        "Invalid input. Please enter a name as a string ,  without numbers and punctuation marks!.\n"
+                    )
+                if not name_input.isalpha():
+                    raise ValueError(
+                        "Invalid input. Please enter a name as a string, without numbers and punctuation marks!.\n"
+                    )
 
-                formatted_name = name.capitalize()
+                name = name_input.capitalize()
 
                 for student in students:
-                    if formatted_name in student:
-                        print(f"Student {formatted_name} has already been added. Enter another name.")
+                    if name in student:
+                        print(f"Student {name} has already been added, enter another student!")
                         break
                 else:
-                    students.append({formatted_name: []})
+                    students.append({name: []})
+                    print(f"Student {name} has been added.")
                     break
 
             except ValueError as error:
