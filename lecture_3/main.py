@@ -145,38 +145,41 @@ def main():
         """
         Find and display the student with the highest average grade.
 
-        The function calculates each student's average grade. If a student
-        has no grades, their average is treated as 0. The student with the
-        highest average is then printed.
+        The function takes a list of dictionaries, where each dictionary maps a
+        student's name to a list of their grades. It calculates each student's
+        average grade (using 0 if the student has no grades) and determines the
+        top student using the ``max`` function with a lambda as the key.
+
+        If the list is empty, the function prints a message and exits.
+        Otherwise, it prints the name of the student with the highest average
+        and their calculated score rounded to one decimal place.
 
         Parameters:
-            students (list): A list of dictionaries storing students
-                            and their grade lists.
+            students (list): A list of dicts like {"Name": [grades]}.
+
+        Returns:
+            None
         """
         if not students:
             print("The list of students is empty.")
             return
 
+        items = [
+            (name, grades)
+            for student in students
+            for name, grades in student.items()
+        ]
 
-        averages = []
-        names = []
+        # Функция для вычисления среднего (0, если нет оценок)
+        def avg(grades):
+            return sum(grades) / len(grades) if grades else 0
 
-        for student in students:
-            for name, grades in student.items():
-                try:
-                    avg_value = round(sum(grades) / len(grades), 1)
-                except ZeroDivisionError:
-                    avg_value = 0
+        # Используем max с key=lambda
+        top_name, top_grades = max(items, key=lambda item: avg(item[1]))
+        top_average = round(avg(top_grades), 1)
 
-                names.append(name)
-                averages.append(avg_value)
+        print(f"The student with the highest average is {top_name} with a grade of {top_average}")
 
-
-        max_average = max(averages)
-        max_index = averages.index(max_average)
-        top_student = names[max_index]
-
-        print(f"The student with the highest average is {top_student} with a grade of {max_average}")
 
 
     main_menu = (
