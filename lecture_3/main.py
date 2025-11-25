@@ -36,119 +36,148 @@ def main():
 
     def add_grade(students: list):
         """
-        Add grade values for an existing student.
+        Add one or multiple grades for an existing student.
 
-        The function validates the student's name and verifies their presence
-        in the list. It accepts multiple grades until the user enters 'done'.
-        Grades must be numeric values between 0 and 100.
-
-        Parameters:
-            students (list): A list of dictionaries with student names
-                             mapped to their grade lists.
+        The function validates the student's name, checks that the student
+        exists, and then prompts the user to enter grade values. Each grade
+        must be a numeric value between 0 and 100. The user can enter multiple
+        grades until typing 'done'.
         """
         while True:
-            name = input("Enter student name: ").capitalize().strip()
+            name_input = input("Enter student name: ").strip()
             try:
-                if any(char.isdigit() for char in name):
-                    raise ValueError("Invalid input. Please enter a name without numbers.\n")
-                if not name.isalpha():
-                    raise ValueError("Invalid input. Please enter a name using only letters.\n")
+                if any(char.isdigit() for char in name_input):
+                    raise ValueError(
+                        "Invalid input. Please enter a name as a string ,  without numbers and punctuation marks!.\n"
+                    )
+                if not name_input.isalpha():
+                    raise ValueError(
+                        "Invalid input. Please enter a name as a string, without numbers and punctuation marks!.\n"
+                    )
+
+                name = name_input.capitalize()
 
                 for student in students:
                     if name in student:
                         while True:
-                            grade = input("Enter a grade (or 'done' to finish): ").strip()
-                            if grade == "done":
-                                break
+                            grade_input = input("Enter a grade (or 'done' to finish): ").strip()
+
+                            if grade_input == "done":
+                                return
+
                             try:
-                                if not grade.isdigit():
+                                if any(char.isalpha() for char in grade_input):
+                                    raise ValueError("Invalid input. Please enter a number.\n")
+                                if not grade_input.isdigit():
                                     raise ValueError("Invalid input. Please enter a number.\n")
 
-                                grade_value = int(grade)
+                                grade_value = int(grade_input)
 
                                 if grade_value < 0 or grade_value > 100:
-                                    raise ValueError("Invalid input. Enter a number between 0 and 100.\n")
+                                    raise ValueError(
+                                        "Invalid input. Please enter number between 0 and 100.\n"
+                                    )
 
                                 student[name].append(grade_value)
 
                             except ValueError as error:
                                 print(error)
-                        break
+
+                        return
                 else:
                     print("Student not found.")
-                break
+                    return
 
             except ValueError as error:
                 print(error)
 
+
     def gen_report(students: list):
         """
-        Generate and print a detailed grade report.
+        Generate and print a summary report for all students.
 
-        The report includes each student's average grade. If grades exist,
-        it also displays the maximum average, minimum average,
-        and overall class average.
+        For each student, the function calculates the average of their grades.
+        If a student has no grades, their average is displayed as 'N/A'.
+        After listing all students, if there are valid averages, the function
+        also prints the maximum average, minimum average, and overall class average.
 
         Parameters:
             students (list): A list of dictionaries containing students
-                             and their grade lists.
+                            and their grade lists.
         """
-        if students == []:
+        if not students:
             print("The list of students is empty.")
             return
 
         report_text = "--- Student Report ---\n"
-        average_values = []
+        averages = []
 
         for student in students:
             for name, grades in student.items():
                 try:
-                    avg_grade = round(sum(grades) / len(grades), 1)
-                    average_values.append(avg_grade)
+                    average_value = round(sum(grades) / len(grades), 1)
+                    averages.append(average_value)
                 except ZeroDivisionError:
-                    avg_grade = "N/A"
+                    average_value = "N/A"
 
-                report_text += f"{name}'s average grade is {avg_grade}\n"
+                report_text += f"{name}'s average grade is {average_value}\n"
 
         report_text += "-" * 10
 
-        if average_values == []:
-            print("Students have no grades.")
-        else:
-            overall_average = round(sum(average_values) / len(average_values), 1)
-            report_text += (
-                f"\nMax Average: {max(average_values)}"
-                f"\nMin Average: {min(average_values)}"
-                f"\nOverall Average: {overall_average}"
-            )
-            print(report_text)
+        if not averages:
+            print("Students have no grades")
+            return
+
+        max_avg = max(averages)
+        min_avg = min(averages)
+        overall_avg = round(sum(averages) / len(averages), 1)
+
+        report_text += (
+            f"\nMax Average: {max_avg}"
+            f"\nMin Average: {min_avg}"
+            f"\nOverall Average: {overall_avg}"
+        )
+
+        print(report_text)
+
 
     def get_top_students(students: list):
         """
-        Determine and display the student with the highest average grade.
+        Find and display the student with the highest average grade.
 
-        If a student has no grades, they are treated as having an average of 0.
+        The function calculates each student's average grade. If a student
+        has no grades, their average is treated as 0. The student with the
+        highest average is then printed.
 
         Parameters:
-            students (list): A list of dictionaries mapping student names
-                             to their grade lists.
+            students (list): A list of dictionaries storing students
+                            and their grade lists.
         """
-        if students == []:
+        if not students:
             print("The list of students is empty.")
             return
 
-        compute_avg = lambda grades: round(sum(grades) / len(grades), 1) if grades else 0
 
         averages = []
+        names = []
 
         for student in students:
-            for _, grade_list in student.items():
-                averages.append(compute_avg(grade_list))
+            for name, grades in student.items():
+                try:
+                    avg_value = round(sum(grades) / len(grades), 1)
+                except ZeroDivisionError:
+                    avg_value = 0
 
-        max_grade = max(averages)
-        max_name = list(students[averages.index(max_grade)].keys())[0]
+                names.append(name)
+                averages.append(avg_value)
 
-        print(f"The student with the highest average is {max_name} with a grade of {max_grade}")
+
+        max_average = max(averages)
+        max_index = averages.index(max_average)
+        top_student = names[max_index]
+
+        print(f"The student with the highest average is {top_student} with a grade of {max_average}")
+
 
     main_menu = (
         "\n--- Student Grade Analyzer ---\n"
