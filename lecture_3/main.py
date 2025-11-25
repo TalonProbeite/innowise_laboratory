@@ -1,108 +1,171 @@
 def main():
 
-    def add_student(students:list):
-        """Add new student to list after validating name and checking duplicates."""
+    def add_student(students: list):
+        """
+        Add a new student to the list after validating the entered name.
+
+        The function ensures the name consists only of alphabetic characters,
+        checks for duplicates, and then adds the student as a dictionary
+        {Name: []} to the students list.
+
+        Parameters:
+            students (list): A list of dictionaries storing students
+                             and their grade lists.
+        """
         while True:
-            name = input("Enter student name: ")
+            name = input("Enter student name: ").strip()
             try:
                 if any(char.isdigit() for char in name):
-                    raise ValueError("Invalid input. Please enter a name as a string ,  without numbers and punctuation marks!.\n")
-                if not all(char.isalnum() for char in name):
-                    raise ValueError("Invalid input. Please enter a name as a string, without numbers and punctuation marks!.\n")
-                
+                    raise ValueError("Invalid input. Please enter a name without numbers.\n")
+                if not name.isalpha():
+                    raise ValueError("Invalid input. Please enter a name using only letters.\n")
+
+                formatted_name = name.capitalize()
+
                 for student in students:
-                    if name.capitalize() in student:
-                        print(f"Student {name.capitalize()} has already been added, enter another student!")
+                    if formatted_name in student:
+                        print(f"Student {formatted_name} has already been added. Enter another name.")
                         break
                 else:
-                    students.append({name.capitalize():[]})
+                    students.append({formatted_name: []})
                     break
-            except ValueError as e:
-                print(e)
 
+            except ValueError as error:
+                print(error)
 
-    def add_grade(students:list):
+    def add_grade(students: list):
+        """
+        Add grade values for an existing student.
+
+        The function validates the student's name and verifies their presence
+        in the list. It accepts multiple grades until the user enters 'done'.
+        Grades must be numeric values between 0 and 100.
+
+        Parameters:
+            students (list): A list of dictionaries with student names
+                             mapped to their grade lists.
+        """
         while True:
-            name = input("Enter student name: ").capitalize()
+            name = input("Enter student name: ").capitalize().strip()
             try:
                 if any(char.isdigit() for char in name):
-                    raise ValueError("Invalid input. Please enter a name as a string ,  without numbers and punctuation marks!.\n")
-                if not all(char.isalnum() for char in name):
-                    raise ValueError("Invalid input. Please enter a name as a string, without numbers and punctuation marks!.\n")
-                
+                    raise ValueError("Invalid input. Please enter a name without numbers.\n")
+                if not name.isalpha():
+                    raise ValueError("Invalid input. Please enter a name using only letters.\n")
+
                 for student in students:
                     if name in student:
                         while True:
-                            grade = input("Enter a grade (or 'done' to finish): ")
-                            if grade == "done": break
+                            grade = input("Enter a grade (or 'done' to finish): ").strip()
+                            if grade == "done":
+                                break
                             try:
-                                if any(char.isalpha() for char in grade):
+                                if not grade.isdigit():
                                     raise ValueError("Invalid input. Please enter a number.\n")
-                                if not all(char.isalnum() for char in grade):
-                                    raise ValueError("Invalid input. Please enter a number.\n")
-                                grade_int = int(grade)
-                                if  grade_int<0 or grade_int>100:
-                                    raise ValueError("Invalid input. Please enter number between 0 and 100.\n")
-                                
-                                student[name].append(grade_int)
-                                
-                            except ValueError as e:
-                                print(e)
+
+                                grade_value = int(grade)
+
+                                if grade_value < 0 or grade_value > 100:
+                                    raise ValueError("Invalid input. Enter a number between 0 and 100.\n")
+
+                                student[name].append(grade_value)
+
+                            except ValueError as error:
+                                print(error)
                         break
                 else:
                     print("Student not found.")
                 break
-            except ValueError as e:
-                print(e)
-        
-    
-    def gen_report(students:list):
+
+            except ValueError as error:
+                print(error)
+
+    def gen_report(students: list):
+        """
+        Generate and print a detailed grade report.
+
+        The report includes each student's average grade. If grades exist,
+        it also displays the maximum average, minimum average,
+        and overall class average.
+
+        Parameters:
+            students (list): A list of dictionaries containing students
+                             and their grade lists.
+        """
         if students == []:
             print("The list of students is empty.")
-        else:
-            report_text="--- Student Report ---\n"
-            grades = []
-            for student in students:
-                for key , value in student.items():
-                    try:
-                        average_grade = round(sum(value)/len(value),1)
-                        grades.append(average_grade)
-                    except ZeroDivisionError:
-                        average_grade = "N/A"
-                    report_text += f"{key}'s average grade is {average_grade}\n"
-            report_text += "-" *  10
-            if grades == []:
-                print("Students have no grades")
-            else:
-                average_overall = round(sum(grades)/len(grades),1)
-                report_text += f"\nMax Average: {max(grades)}\nMin Average: {min(grades)}\nOverall Average: {average_overall}"
-                print(report_text)
+            return
 
-            
+        report_text = "--- Student Report ---\n"
+        average_values = []
 
-    def get_top_students(students:list):
-        if students == []:
-            print("The list of students is empty.")
-        grades = []
-        average_grade = lambda x: round(sum(x)/len(x),1)
         for student in students:
-            for key, value in student.items():
+            for name, grades in student.items():
                 try:
-                    grades.append(average_grade(value))
+                    avg_grade = round(sum(grades) / len(grades), 1)
+                    average_values.append(avg_grade)
                 except ZeroDivisionError:
-                    grades.append(0)
-        max_grade = max(grades)
-        max_grade_name = list(students[grades.index(max_grade)].keys())[0]
-        print(f"The student with the highest average  is {max_grade_name} with a grade of {max_grade}")
-            
+                    avg_grade = "N/A"
 
+                report_text += f"{name}'s average grade is {avg_grade}\n"
 
-    main_menu = "\n--- Student Grade Analyzer ---\n1. Add a new student\n2. Add grades for a student\n3. Generate a full report\n4. Find the top student\n5. Exit program\nEnter your choice: " 
+        report_text += "-" * 10
+
+        if average_values == []:
+            print("Students have no grades.")
+        else:
+            overall_average = round(sum(average_values) / len(average_values), 1)
+            report_text += (
+                f"\nMax Average: {max(average_values)}"
+                f"\nMin Average: {min(average_values)}"
+                f"\nOverall Average: {overall_average}"
+            )
+            print(report_text)
+
+    def get_top_students(students: list):
+        """
+        Determine and display the student with the highest average grade.
+
+        If a student has no grades, they are treated as having an average of 0.
+
+        Parameters:
+            students (list): A list of dictionaries mapping student names
+                             to their grade lists.
+        """
+        if students == []:
+            print("The list of students is empty.")
+            return
+
+        compute_avg = lambda grades: round(sum(grades) / len(grades), 1) if grades else 0
+
+        averages = []
+
+        for student in students:
+            for _, grade_list in student.items():
+                averages.append(compute_avg(grade_list))
+
+        max_grade = max(averages)
+        max_name = list(students[averages.index(max_grade)].keys())[0]
+
+        print(f"The student with the highest average is {max_name} with a grade of {max_grade}")
+
+    main_menu = (
+        "\n--- Student Grade Analyzer ---\n"
+        "1. Add a new student\n"
+        "2. Add grades for a student\n"
+        "3. Generate a full report\n"
+        "4. Find the top student\n"
+        "5. Exit program\n"
+        "Enter your choice: "
+    )
+
     students = []
+
     while True:
         menu_item = input(main_menu)
         try:
             menu_item_int = int(menu_item)
+
             match menu_item_int:
                 case 5:
                     break
@@ -115,7 +178,7 @@ def main():
                 case 4:
                     get_top_students(students=students)
                 case _:
-                    print("Invalid input. Please enter a number between 1 and 5!.")
+                    print("Invalid input. Please enter a number between 1 and 5!")
 
         except ValueError:
             print("Invalid input. Please enter a number.\n")
