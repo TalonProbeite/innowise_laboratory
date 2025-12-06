@@ -1,10 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI , Depends
+from typing import Annotated , Optional
 import uvicorn
-from sqlalchemy.ext.asyncio import create_async_engine , async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine , async_sessionmaker , AsyncSession
 from sqlalchemy.orm import DeclarativeBase , Mapped , mapped_column 
+from pydantic import BaseModel, Field
+from sqlalchemy import select
 
 
-engine = create_async_engine(r"sqlite+aiosqlite:///lecture_5\book_api\Book.db")
+engine = create_async_engine(r"sqlite+aiosqlite:///Book.db")
 
 
 new_session = async_sessionmaker(engine,expire_on_commit=False)
@@ -13,6 +16,7 @@ async def get_session():
     async with new_session() as session:
         yield session
 
+sessionDep = Annotated[AsyncSession , Depends(get_session)]
 
 class Base(DeclarativeBase):
     pass
@@ -23,7 +27,7 @@ class BookModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str]
     author: Mapped[str]
-    year: Mapped[int]
+    year: Mapped[Optional[int]] = mapped_column(nullable=True)
 
 
 async def setup_database():
@@ -34,14 +38,36 @@ async def setup_database():
 
 app = FastAPI()
 
-@app.post("/books/")
-async def add_book():
-    pass
 
+class BookAddSchema(BaseModel): 
+    title: str = Field(min_length=1)
+    author: str = Field(min_length=1)
+    year: Optional[int] = None
+
+class BookSchema(BookAddSchema):
+    id: int
+
+
+
+@app.post("/books/")
+async def add_book(data: BookAddSchema, session: sessionDep):
+    new_book = BookModel(
+        title = data.title,
+        author = data.author,
+        year = data.year
+    )
+    session.add(new_book)
+    await session.commit()
+    return {"success": True}
 
 @app.get("/books/")
-async def get_books():
-    pass
+async def get_books(session:sessionDep):
+    query = select(BookModel)
+    result = await session.execute(query)
+    books = result.scalars().all()
+    return books
+
+    
 
 
 @app.delete("/books/{book_id}")
@@ -56,4 +82,3 @@ async def update_book_details():
 @app.get("/books/search/")
 async def get_books2():
     pass
-
