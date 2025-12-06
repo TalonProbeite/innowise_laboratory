@@ -1,16 +1,17 @@
-[project]
+[tool.poetry]
 name = "innowise-laboratory"
 version = "0.1.0"
 description = "Python course assignments and laboratory works from Innowise"
-authors = [
-    {name = "artem ponomarcev",email = "siionunstoppable@gmail.com"}
-]
-license = {text = "MIT"}
+authors = ["artem ponomarcev <siionunstoppable@gmail.com>"]
+license = "MIT"
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = [
-]
+package-mode = false
 
+[tool.poetry.dependencies]
+python = ">=3.11"
+fastapi = "^0.123.10"
+uvicorn = "^0.38.0"
+sqlalchemy = "^2.0.44"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
