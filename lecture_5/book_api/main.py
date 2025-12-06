@@ -30,3 +30,30 @@ async def setup_database():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
+
+
+app = FastAPI()
+
+@app.post("/books/")
+async def add_book():
+    pass
+
+
+@app.get("/books/")
+async def get_books():
+    pass
+
+
+@app.delete("/books/{book_id}")
+async def delet_book_by_id():
+    pass
+
+
+@app.put("/books/{book_id}")
+async def update_book_details():
+    pass
+
+@app.get("/books/search/")
+async def get_books2():
+    pass
+
